@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from accounts.models import CustomUser
 
 class Task(models.Model):
     PRIORITY_CHOICES = [
@@ -18,7 +18,7 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
     priority = models.PositiveIntegerField(choices=PRIORITY_CHOICES)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

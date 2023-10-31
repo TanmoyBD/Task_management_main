@@ -7,11 +7,12 @@ from django.views.generic.detail import DetailView
 from .models import Task
 from django.views.generic.edit import CreateView,UpdateView,DeleteView,FormView
 from django.urls import reverse_lazy
-
+from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+from accounts.models import CustomUser
 
 from django.contrib.auth.views import LoginView
 
@@ -27,22 +28,42 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('tasks')
     
-class RegisterPage(FormView):
-    template_name = 'tasks/register.html'
-    form_class = UserCreationForm
-    redirect_authenticated_user = True
-    success_url = reverse_lazy('tasks')
+# class RegisterPage(FormView):
+#     template_name = 'tasks/register.html'
+#     form_class = UserCreationForm
+#     redirect_authenticated_user = True
+#     success_url = reverse_lazy('tasks')
 
-    def form_valid(self, form):
-        user  = form.save()
-        if user is not None:
-            login(self.request,user)
-        return super(RegisterPage, self).form_valid(form)
+#     def form_valid(self, form):
+#         user  = form.save()
+#         if user is not None:
+#             login(self.request,user)
+#         return super(RegisterPage, self).form_valid(form)
     
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('tasks')
-        return super(RegisterPage, self).get(*args, **kwargs)
+#     def get(self, *args, **kwargs):
+#         if self.request.user.is_authenticated:
+#             return redirect('tasks')
+#         return super(RegisterPage, self).get(*args, **kwargs)
+
+
+from.forms import SignupForm
+
+
+
+
+def register(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('tasks ')  # Assuming you have a URL pattern named 'home'
+    else:
+        form = SignupForm()
+    return render(request, 'tasks/register.html', {'form': form})
+
+
+
 
 
 @login_required
@@ -116,3 +137,42 @@ def get_completed_tasks(request):
     completed_tasks = Task.objects.filter(completed=True,user=request.user)
     context = {'completed_tasks': completed_tasks}
     return render(request, 'tasks/completed.html', context)
+
+import random
+def generate_confirmation_code():
+    # Generate a 6-digit random number
+    confirmation_code = ''.join(random.choice('0123456789') for _ in range(6))
+    return confirmation_code
+
+
+from accounts.models import CustomUser
+
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        user = CustomUser.objects.filter(user=request.user)
+        email = user.email
+
+        if user:
+            # Generate a confirmation code (you need to implement this part)
+            # For example, you can use a library like `secrets` to generate a random code
+            confirmation_code = generate_confirmation_code()
+
+            # Save the confirmation code in the user's profile or a separate model
+            user.profile.confirmation_code = confirmation_code
+            user.profile.save()
+
+            # Send the email
+            mail_subject = 'Forgot password'
+            message = f'Your verification code is: {confirmation_code}'
+            to_email = email
+            send_email = EmailMessage(mail_subject, message, to=[to_email])
+            send_email.send()
+
+            return redirect('verify_code')  # Redirect to a page for entering the verification code
+        else:
+            # Handle case where email is not found
+            pass  # You can add your own logic here
+
+    return render(request, 'email_app/forgot_password.html')
