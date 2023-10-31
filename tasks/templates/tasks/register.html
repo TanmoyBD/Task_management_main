@@ -1,0 +1,25 @@
+{% extends 'tasks/main.html' %}
+{% block content %}
+<div class="header-bar">
+    <h1>Register</h1>
+</div>
+<div class="card-body">
+    <form method="POST">
+        {% csrf_token %}
+        <!-- <lebel>{{form.username.lebel}}</lebel>
+        {{form.username}}
+
+        <lebel>{{form.password1.lebel}}</lebel>
+        {{form.password1}}
+
+        <lebel>{{form.password2.lebel}}</lebel>
+        {{form.password2}} -->
+        {{form.as_p}}
+        <input style="margin-top:10px;" class="button" type="submit" value="Register">
+    </form>
+    
+    <p>Already have an account? <a class="button" href="{% url 'login' %}">Login</a></p>
+</div>
+
+
+{% endblock content %}

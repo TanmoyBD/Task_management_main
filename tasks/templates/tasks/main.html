@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>To Do List</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200&display=swap" rel="stylesheet">
+
+    <style>
+        body{
+            background-color: #FAFAFA;
+            font-family: 'Nunito', sans-serif;
+            padding-top: 50px;
+        }
+
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        {
+            font-family: 'Raleway', sans-serif;
+        }
+
+        a,
+        p {
+            color: #4b5156
+        }
+
+        a {
+            font-weight: 600;
+        }
+
+        .container{
+            max-width: 550px;
+            margin: auto;
+            background-color: #fff;
+            -webkit-box-shadow: 2px 2px 13px -4px rgba(0,0,0,0.21);
+            box-shadow: 2px 2px 13px -4px rgba(0,0,0,0.21);
+            
+        }
+
+        input {
+            outline: none;
+            border: none;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+            background: linear-gradient(90deg, #EEA390 0%, #EB796F 43%, #EB796F 100%);
+        }
+
+        .header-bar a {
+            color: rgb(247, 247, 247);
+            text-decoration: none;
+        }
+
+        .task-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #fff;
+            border-top: 1px solid rgb(226, 226,226);
+        }
+        .task-title {
+            display: flex;
+            padding: 20px;
+        }
+
+        .task-title a {
+            text-decoration: none;
+            color: #4b5156;
+            margin-left:10px;
+        }
+
+        .task-complete-icon {
+            height: 20px;
+            width: 20px;
+            background-color: rgb(105,192,105);
+            border-radius:50%;
+        }
+
+        .task-incomplete-icon {
+            height: 20px;
+            width: 20px;
+            background-color: rgb(218,218,218);
+            border-radius:50%;
+        }
+
+        .delete-link {
+            text-decoration: none;
+            font-weight: 900;
+            color: #cf4949;
+            font-size: 22px;
+            line-height: 0;
+        }
+
+        .add-link {
+            background-color: #008CBA; 
+            color: #fff; 
+            text-decoration: none;
+            padding: 10px 20px; 
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease; 
+            display: inline-block;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .add-link:hover {
+            background-color: #005A8C; 
+        }
+
+        input[type=text],
+        input[type=password],
+        textarea {
+            border:1px solid #EB796F;
+            border-radius: 5px;
+            padding: 10px;
+            width: 90%;
+        }
+
+        level {
+            padding-top: 10px !important;
+            display: block;
+        }
+
+        .button {
+            border: 1px solid #EB796F;
+            background-color: #FAFAFA;
+            color: #EB796F;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .card-body {
+            padding: 20px;
+
+        }
+        .notification {
+            background-color: #ff0000; /* Red background color */
+            color: #ffffff; /* White text color */
+            padding: 10px; /* Add some padding */
+            margin-bottom: 10px; /* Add some spacing between notifications */
+        }
+
+        /* Add this to your CSS file */
+
+        .search-form {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+        /* Add this CSS to your stylesheet */
+
+        .task-details {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin-top: 50px;
+        }
+
+        .task-details h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        }
+
+        .task-details p {
+        font-size: 16px;
+        margin-bottom: 8px;
+        }
+
+        .task-details .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        }
+
+        .task-details .btn:hover {
+        background-color: #0056b3;
+        }
+
+        .task-details .completed-status {
+        font-size: 18px;
+        font-weight: bold;
+        color: #28a745;
+        }
+
+        .task-details .incomplete-status {
+        font-size: 18px;
+        font-weight: bold;
+        color: #dc3545;
+        }
+
+        /* Add this CSS to your stylesheet */
+
+        .yellow-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ffc107; /* Yellow color */
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        }
+
+        .yellow-button:hover {
+        background-color: #ffca28; /* Slightly lighter shade on hover */
+        }
+
+        {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .task {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h3 {
+            color: #555;
+        }
+
+        .description {
+            font-style: italic;
+            color: #777;
+        }
+
+        p {
+            margin: 5px 0;
+            color: #444;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+</body>
+</html>

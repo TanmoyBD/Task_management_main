@@ -1,0 +1,101 @@
+
+{% extends 'tasks/main.html' %}
+{% block content %}
+
+<div class="header-bar">
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+        <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{count|pluralize:"s"}} </h3>
+    </div>
+    
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</div>
+
+<hr>
+<h1>Manage your task</h1>
+<a href="{% url 'create_task' %}" class="add-link">Add Task</a>
+
+<a href="{% url 'tasks' %}" class="add-link" style="margin-left: 200px; margin-bottom:px; background-color: gray;">Refresh</a>
+<a href="{% url 'completed_tasks' %}" class="add-link" style="margin-left:200px; margin-bottom: 0px; background-color: rgb(91, 148, 73);">Completed</a>
+
+
+
+
+<form method="get" class="search-form">
+    <input type="text" name="title" value="{{ searched_title }}" class="search-input" placeholder="Search by title...">
+    <button type="submit" class="search-button">Search</button>
+</form>
+
+<form method="get" class="search-form">
+    <label for="priority">Priority:</label>
+    <select name="priority" id="priority" class="search-input">
+        <option value="" {% if not searched_priority %}selected{% endif %}>Any</option>
+        <option value="1" {% if '1' == searched_priority %}selected{% endif %}>1</option>
+        <option value="2" {% if '2' == searched_priority %}selected{% endif %}>2</option>
+        <option value="3" {% if '3' == searched_priority %}selected{% endif %}>3</option>
+        <option value="4" {% if '4' == searched_priority %}selected{% endif %}>4</option>
+        <option value="5" {% if '5' == searched_priority %}selected{% endif %}>5</option>
+        <option value="6" {% if '6' == searched_priority %}selected{% endif %}>6</option>
+        <option value="7" {% if '7' == searched_priority %}selected{% endif %}>7</option>
+        <option value="8" {% if '8' == searched_priority %}selected{% endif %}>8</option>
+    </select>
+    <button type="submit" class="search-button">Filter by Priority</button>
+</form>
+
+
+<form method="get" class="search-form">
+    <label for="created_at">Created At:</label>
+    <input type="date" name="created_at" id="created_at" value="{{ searched_created_at }}" class="search-input">
+    <button type="submit" class="search-button">Filter by Created At</button>
+</form>
+
+<form method="get" class="search-form">
+    <label for="due_date">Due Date:</label>
+    <input type="date" name="due_date" id="due_date" value="{{ searched_due_date }}" class="search-input">
+    <button type="submit" class="search-button">Filter by Due Date</button>
+</form>
+
+<div class="task-items-wrapper">
+    {% for task in tasks %}
+        <!-- Your existing task display code remains the same -->
+        <div class="task-wrapper">
+            {% if task.completed %}
+                <div class="task-title">
+                    <div class="task-complete-icon"></div>
+                    <i><s><a href="{% url 'task-update' task.id %}">{{task.title}}</a></s></i>
+                </div>
+                <div>
+                    <a href="{% url 'task_details' task_id=task.id %}" class="yellow-button">Details</a>
+                </div>
+                <div class="task-priority">Priority: {{ task.priority }}</div>
+                <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+            {% else %}
+                <div class="task-title">
+                    <div class="task-incomplete-icon"></div>
+                    <a href="{% url 'task-update' task.id %}">{{task.title}}</a>
+                </div>
+                <div class="task-priority">Priority: {{ task.priority }}</div>
+                <div>
+                    <a href="{% url 'task_details' task_id=task.id %}" class="yellow-button">Details</a>
+                </div>
+            <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+            <form action="{% url 'task_complete' task.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">Complete Task</button>
+            </form>
+            
+
+            {% endif %}
+            
+        </div>
+
+    {% empty %}
+        <th>No items here</th>
+    {% endfor %}
+</div>
+
+{% endblock %}

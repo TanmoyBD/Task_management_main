@@ -1,0 +1,20 @@
+<!-- task_details.html -->
+
+{% extends 'tasks/main.html' %}
+{% block content %}
+
+  <div class="task-details">
+    <h1>{{ task.title }}</h1>
+    <p>{{ task.description }}</p>
+    <p>Due Date: {{ task.due_date|date:"F j, Y, g:i a" }}</p>
+    <p>Priority: {{ task.get_priority_display }}</p>
+    <p>Created At: {{ task.created_at|date:"F j, Y, g:i a" }}</p>
+    <p>Updated At: {{ task.updated_at|date:"F j, Y, g:i a" }}</p>
+
+    {% if task.completed %}
+      <p>Status: Completed</p>
+    {% else %}
+      <p>Status: Incomplete</p>
+    {% endif %}
+  </div>
+{% endblock content %}
