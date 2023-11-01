@@ -15,5 +15,9 @@ urlpatterns = [
     path('complete/<int:id>/', TaskCompleted, name='task_complete'),
     path('task/<int:task_id>/', task_details, name='task_details'),
     path('completed_tasks/', get_completed_tasks, name='completed_tasks'),
-    path('forgot_password/', forgot_password, name='forgot_password'),
+    path('forgot_password/', Send_mail, name='send_mail'),
+    path('confirmation/<str:email>/', Confirmation, name='confirmation'),
+    path('pass_word_rest/<str:pass_rest_token>/', Forgotten_password, name='forgot_pass'),
+
+    
 ]

@@ -13,6 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from accounts.models import CustomUser
+from django.shortcuts import render, redirect
+from django.core.mail import EmailMessage
 
 from django.contrib.auth.views import LoginView
 
@@ -57,7 +59,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('tasks ')  # Assuming you have a URL pattern named 'home'
+            return redirect('tasks')  # Assuming you have a URL pattern named 'home'
     else:
         form = SignupForm()
     return render(request, 'tasks/register.html', {'form': form})
@@ -149,30 +151,101 @@ from accounts.models import CustomUser
 
 
 
-def forgot_password(request):
+def Send_mail(request):
     if request.method == 'POST':
-        user = CustomUser.objects.filter(user=request.user)
-        email = user.email
+        email = request.POST.get('email')
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            # Handle the case where the email doesn't exist
+            return render(request, 'tasks/email_submit.html', {'error_message': 'Email not found'})
+            
+        
 
-        if user:
-            # Generate a confirmation code (you need to implement this part)
-            # For example, you can use a library like `secrets` to generate a random code
-            confirmation_code = generate_confirmation_code()
+        confirmation_code = generate_confirmation_code()
+        
+        user.confirmation_code=confirmation_code
+        user.save()
+        
+        mail_subject = 'Forgot password'
+        message = f'Hi {user.username} Your verification code is: {confirmation_code}'
+        to_email = email
+        send_email = EmailMessage(mail_subject, message, to=[to_email])
+        send_email.send()
+        return redirect('confirmation', email=email)
+    return render(request, 'tasks/email_submit.html')
 
-            # Save the confirmation code in the user's profile or a separate model
-            user.profile.confirmation_code = confirmation_code
-            user.profile.save()
 
-            # Send the email
-            mail_subject = 'Forgot password'
-            message = f'Your verification code is: {confirmation_code}'
-            to_email = email
-            send_email = EmailMessage(mail_subject, message, to=[to_email])
-            send_email.send()
 
-            return redirect('verify_code')  # Redirect to a page for entering the verification code
-        else:
-            # Handle case where email is not found
-            pass  # You can add your own logic here
+# views.py
 
-    return render(request, 'email_app/forgot_password.html')
+from django.shortcuts import render, redirect
+from .forms import ConfirmationForm
+import uuid
+
+def Confirmation(request,email):
+    if request.method == 'POST':
+        form = ConfirmationForm(request.POST)
+        if form.is_valid():
+            user = CustomUser.objects.filter(email=email).first()
+            original_code = user.confirmation_code
+            user_given_code = form.cleaned_data['confirmation_code']
+            print("line to 193")
+            print("The code is",original_code)
+            
+            if original_code == user_given_code:
+                random_token = str(uuid.uuid4())
+                print("line to 197")
+                
+                # Assign the token to user.forgotten_token
+                user.forgotten_token = random_token
+                user.save()
+                user.confirmation_code = None
+                return redirect('forgot_pass',pass_rest_token=random_token)
+            else:
+                error = "Code is not correct"
+                print("207")
+                return redirect('confirmation', email=email)
+    else:
+        form = ConfirmationForm()
+
+    return render(request, 'tasks/confirmation.html', {'form': form})
+
+
+
+from django.shortcuts import render, redirect
+from .models import CustomUser
+from .forms import PasswordChangeForm
+
+def Forgotten_password(request, pass_rest_token):
+    try:
+        
+        user = CustomUser.objects.get(forgotten_token=pass_rest_token)
+        print("Here are token",pass_rest_token)
+    except CustomUser.DoesNotExist:
+        # Handle the case where no user with the provided token is found
+        # You can display an error message or redirect to an error page
+        return render(request, 'tasks/error.html')  # Replace 'error.html' with your actual template
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            confirm_password = form.cleaned_data['confirm_password']
+
+            if new_password == confirm_password:
+                print("Error on 233")
+                user.set_password(new_password)
+                print("Error on 235")
+                user.forgotten_token = None
+                print("Error on 237")
+                user.save()
+                print("Error on 239")
+                return redirect('login')
+            else:
+                print("Errorn on 283 ")
+                return render(request, 'tasks/error.html')
+    else:
+        form = PasswordChangeForm()
+
+    return render(request, 'tasks/password_change.html', {'form': form})

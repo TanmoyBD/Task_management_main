@@ -22,10 +22,13 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(username, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    #email = models.CharField(max_length=30, unique=True)
+    email = models.CharField(max_length=30)
+    confirmation_code = models.CharField(max_length=10,blank=True, null=True, default='')
+    forgotten_token = models.CharField(max_length=36,blank=True, null=True, unique=True, default='')
     username = models.CharField(max_length=30, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    
 
     objects = CustomUserManager()
 

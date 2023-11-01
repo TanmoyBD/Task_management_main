@@ -1,0 +1,14 @@
+{% extends 'tasks/main.html' %}
+{% block content %}
+
+<<h1>Confirm Your Code</h1>
+<h1>We sent a code to your email</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{{ error }}
+
+{% endblock content %}
