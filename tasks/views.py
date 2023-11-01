@@ -210,6 +210,7 @@ def Confirmation(request,email):
         form = ConfirmationForm()
 
     return render(request, 'tasks/confirmation.html', {'form': form})
+#Nooooooo
 
 
 
